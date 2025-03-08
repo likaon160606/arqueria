@@ -39,7 +39,7 @@ router.get('/users', async (req, res) => {
 
 
 // **Crear un nuevo usuario**
-router.post('/register', async (req, res) => {
+router.post('/register',  async (req, res) => {
     try {
         const { username, email, password, role_id } = req.body;
 
