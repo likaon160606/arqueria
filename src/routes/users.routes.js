@@ -6,7 +6,7 @@ import { isAdminOrMaster } from '../middlewares/auth.js'
 const router = Router();
 
 // ** Ruta para acceder a usuarios
-router.get('/users', isAdminOrMaster, async (req, res) => {
+router.get('/users', async (req, res) => {
     try {
         // Obtener todos los usuarios con role_id = 2 (admin)
         const [users] = await pool.query(`
