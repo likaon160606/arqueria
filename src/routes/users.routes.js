@@ -6,7 +6,7 @@ import { isAdminOrMaster } from '../middlewares/auth.js'
 const router = Router();
 
 // ** Ruta para acceder a usuarios
-router.get('/users', async (req, res) => {
+router.get('/users', isAdminOrMaster,  async (req, res) => {
     try {
         // Obtener todos los usuarios con role_id = 2 (admin)
         const [users] = await pool.query(`
@@ -39,7 +39,7 @@ router.get('/users', async (req, res) => {
 
 
 // **Crear un nuevo usuario**
-router.post('/register',  async (req, res) => {
+router.post('/register', isAdminOrMaster,  async (req, res) => {
     try {
         const { username, email, password, role_id } = req.body;
 
