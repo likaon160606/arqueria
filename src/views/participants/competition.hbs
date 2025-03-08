@@ -1,0 +1,110 @@
+<div class="container mt-2">
+    <!-- Formulario para filtrar -->
+    <form action="/competition" method="GET" class="mb-4">
+        <div class="row">
+            <div class="col-md-4">
+                <label for="category" class="form-label fw-bold">Categoría</label>
+                <select id="category" name="category" class="form-select">
+                    <option value="" {{#unless category}}selected{{/unless}}>Todas</option>
+                    <option value="Infantil" {{#if (eq category "Infantil")}}selected{{/if}}>Infantil</option>
+                    <option value="Novato" {{#if (eq category "Novato")}}selected{{/if}}>Novato</option>
+                    <option value="sub14" {{#if (eq category "sub14")}}selected{{/if}}>Sub14</option>
+                    <option value="sub16" {{#if (eq category "sub16")}}selected{{/if}}>Sub16</option>
+                    <option value="sub18" {{#if (eq category "sub18")}}selected{{/if}}>Sub18</option>
+                    <option value="Amateur" {{#if (eq category "Amateur")}}selected{{/if}}>Amateur</option>
+                    <option value="Abierto" {{#if (eq category "Abierto")}}selected{{/if}}>Abierto</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="subcategory" class="form-label fw-bold">Subcategoría</label>
+                <select id="subcategory" name="subcategory" class="form-select">
+                    <option value="" {{#unless subcategory}}selected{{/unless}}>Todas</option>
+                    <option value="compuesto" {{#if (eq subcategory "compuesto")}}selected{{/if}}>Compuesto</option>
+                    <option value="recurvo" {{#if (eq subcategory "recurvo")}}selected{{/if}}>Recurvo</option>
+                </select>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary">Filtrar</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Encabezados dinámicos -->
+    <div class="row mt-4">
+        <h4 class="text-center text-uppercase" style="font-weight: bold; color: #294663;">
+            {{#if category}}<span style="color: #000;">CATEGORÍA: </span>{{category}}{{else}}TODAS{{/if}}
+        </h4>
+        <h5 class="text-center" style="font-weight: bold; color: #c83a33;">
+            {{#if subcategory}}<span style="color: #000;">Subcategoría: </span>{{subcategory}}{{else}}TODAS{{/if}}
+        </h5>
+    </div>
+
+    <!-- Condición para verificar si hay participantes -->
+    {{#if participants.length}}
+    <div class="row mt-3">
+        <table class="table text-center">
+            <thead>
+                <tr class="table-dark">
+                    <th scope="col">Lugar</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Apellido</th>
+                    <th scope="col">Puntos Totales</th>
+                    <th scope="col">+X</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each participants}}
+                <tr>
+    <!-- Colocamos la variable "place" que se pasa desde el backend -->
+    <td>
+        {{#if (eq place 1)}}
+            <img src="/img/gold.png" alt="Primer lugar" style="width: 30px; height: 30px;">
+        {{else if (eq place 2)}}
+            <img src="/img/silver.png" alt="Segundo lugar" style="width: 30px; height: 30px;">
+        {{else if (eq place 3)}}
+            <img src="/img/bronze.png" alt="Tercer lugar" style="width: 30px; height: 30px;">
+        {{else}}
+            {{place}}
+        {{/if}}
+    </td>
+
+    <td>{{name}}</td>
+    <td>{{lastname}}</td>
+    <td>{{total_points}}</td>
+    <td>{{total_x}}</td>
+</tr>
+
+
+                            {{!-- <tr>
+              <td colspan='4'>
+                {{#each series}}
+                  <div class='mb-2 mt-2 d-flex justify-content-center flex-column align-items-center'>
+                    <strong style='background: #294663; color: white; padding: 6px 14px; border-radius: 50px;'>SERIE {{series_number}}</strong>
+                    <div class='d-flex justify-content-center flex-wrap gap-2 mt-2'>
+                      {{#each arrows}}
+                        <div class='border p-2 rounded-3' style='background: #ebeef2;'>F{{arrow_number}}: {{points}}</div>
+                      {{/each}}
+                    </div>
+                  </div>
+                {{/each}}
+              </td>
+            </tr> --}}
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+    {{else}}
+    <!-- Mensaje si no hay participantes -->
+    <div class="card text-center mx-auto" style="width:350px">
+        <div class="card-header">
+            <h3>No hay participantes para mostrar</h3>
+        </div>
+        <div class="card-body">
+            <p>Prueba cambiar los filtros o registra un nuevo participante.</p>
+        </div>
+    </div>
+    {{/if}}
+</div>
+
+
+

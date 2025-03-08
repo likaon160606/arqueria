@@ -1,0 +1,210 @@
+<div class="container p-4">
+  <div class="row col-md-4 mx-auto">
+    <div class="card text-center">
+      <div class="card-header">
+        <h3 class="text-uppercase">Agregar Series y Flechas</h3>
+      </div>
+
+      <div class="alert alert-info mt-2" role="alert">
+        <h6>Selecciona un participante, luego crea la serie y agrega las flechas que requieras. Por último, Guarda la series.</h6>
+      </div>
+
+      <div class="card-body">
+        <form method="POST" id="seriesForm">
+          <!-- Selección del participante -->
+          <div class="input-group mt-2">
+            <label class='input-group-text' for="participant_id">Participantes:</label>
+            <select class="form-select bg-light border-primary fw-bold" name="participant_id" id="participant_id" required>
+              {{#each participants}}
+                <option value="{{this.id}}">{{this.name}} {{this.lastname}}</option>
+              {{/each}}
+            </select>
+          </div>
+
+          <!-- Contenedor +X -->
+          <div class="input-group mt-3">
+            <label class="input-group-text" for="total_x">Cantidad de "X":</label>
+            <input class="form-control" type="number" name="total_x" id="total_x" min="0" value="0">
+          </div>
+
+          <!-- Contenedor de series -->
+          <div id="series-container">
+            <div class="series" id="series-1">
+              <h3 class="mt-3">Serie 1</h3>
+              <div class="arrows input-group mt-2">
+                <label class='input-group-text' for="arrow-1-1">Flecha 1:</label>
+                <input class='form-control' placeholder="Ej: 0" type="number" name="series[0][arrows][0][points]" min="0" max="10" value="0" id="arrow-1-1" oninput="validateArrowValue(this)" oninvalid="this.setCustomMessage('')" required>
+              </div>
+              
+              <button class="btn btn-primary mt-2" type="button" onclick="addArrow(1)">Agregar Flecha</button>
+              <button class="btn btn-danger mt-2" type="button" onclick="removeArrow(1)">Eliminar Flecha</button>
+              <button class="btn btn-danger mt-2" type="button" onclick="removeSeries(1)">Eliminar Serie</button>
+            </div>
+          </div>
+
+          <div class="card mt-4">
+            <button class="btn btn-dark" type="button" onclick="addSeries()">Agregar Serie(s)</button>
+            <button class="btn btn-success mt-2" type="submit">Guardar Series</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// mensjae de validacion de 0 y 10 flechas
+function validateArrowValue(input) {
+    if (input.value < 0) {
+        input.setCustomValidity("El valor no puede ser menor a 0.");
+    } else if (input.value > 10) {
+        input.setCustomValidity("El valor no puede ser mayor a 10.");
+    } else {
+        input.setCustomValidity(""); // Restablece el mensaje si es válido
+    }
+    input.reportValidity(); // Esto muestra el mensaje inmediatamente
+}
+
+
+function setCustomMessage(input) {
+    if (input.value === "") {
+        input.setCustomValidity("Este campo no puede estar vacío.");
+    }
+}
+
+  // Función para agregar una nueva serie
+  function addSeries() {
+    const seriesContainer = document.getElementById('series-container');
+    const seriesCount = document.querySelectorAll('.series').length + 1;
+
+    const newSeries = document.createElement('div');
+    newSeries.classList.add('series');
+    newSeries.id = `series-${seriesCount}`;
+    newSeries.innerHTML = `
+      <h3 class="mt-4">Serie ${seriesCount}</h3>
+      <div class="arrows input-group mt-2">
+        <label class='input-group-text' for="arrow-${seriesCount}-1">Flecha 1:</label>
+        <input class='form-control' placeholder="Ej: 0" type="number" name="series[${seriesCount - 1}][arrows][0][points]" id="arrow-${seriesCount}-1" min="0" max="10" value="0"  oninput="validateArrowValue(this)" oninvalid="this.setCustomMessage('')" required>
+      </div>
+      <button class="btn btn-primary mt-2" type="button" onclick="addArrow(${seriesCount})">Agregar Flecha</button>
+      <button class="btn btn-danger mt-2" type="button" onclick="removeArrow(${seriesCount})">Eliminar Flecha</button>
+      <button class="btn btn-danger mt-2" type="button" onclick="removeSeries(${seriesCount})">Eliminar Serie</button>
+    `;
+    seriesContainer.appendChild(newSeries);
+  }
+
+  // Función para agregar una nueva flecha en una serie
+  function addArrow(seriesNumber) {
+    const seriesElement = document.getElementById(`series-${seriesNumber}`);
+    const arrowCount = seriesElement.querySelectorAll('.arrows input').length + 1;
+
+    const newArrow = document.createElement('div');
+    newArrow.classList.add('arrow', 'w-100');
+    newArrow.innerHTML = `
+    <div class="arrows input-group mt-2">
+      <label class='input-group-text' for="arrow-${seriesNumber}-${arrowCount}">Flecha ${arrowCount}:</label>
+      <input class='form-control' placeholder="Ej: 0" type="number" name="series[${seriesNumber - 1}][arrows][${arrowCount - 1}][points]" id="arrow-${seriesNumber}-${arrowCount}" min="0" max="10" value="0"  oninput="validateArrowValue(this)" oninvalid="this.setCustomMessage('')" required>
+    </div>
+    `;
+    seriesElement.querySelector('.arrows').appendChild(newArrow);
+  }
+
+  
+
+  // Función para ELIMINAR una flecha en una serie
+  function removeArrow(seriesNumber) {
+    const seriesElement = document.getElementById(`series-${seriesNumber}`);
+    const arrowsContainer = seriesElement.querySelector('.arrows');
+    const lastArrow = arrowsContainer.querySelector('.arrow:last-child');
+
+    if (lastArrow) {
+      arrowsContainer.removeChild(lastArrow);
+    }
+  }
+
+  // Función para eliminar una serie
+  function removeSeries(seriesNumber) {
+    const seriesElement = document.getElementById(`series-${seriesNumber}`);
+    if (seriesElement) seriesElement.remove();
+  }
+
+  // Función para capturar dinámicamente los datos del formulario
+  function getSeriesData() {
+    const seriesElements = document.querySelectorAll('.series');
+    const series = [];
+
+    seriesElements.forEach((seriesElement, index) => {
+      // Obtener todas las flechas dentro de esta serie
+      const arrows = Array.from(seriesElement.querySelectorAll('.arrows input')).map((input, arrowIndex) => ({
+        arrow_number: arrowIndex + 1,
+        points: parseInt(input.value, 10),
+      }));
+
+      series.push({
+        series_number: index + 1, // Número de la serie basado en el orden
+        arrows, // Todas las flechas capturadas correctamente
+      });
+    });
+
+    return series;
+  }
+
+  // Manejo del envío del formulario
+  document.querySelector('#seriesForm').addEventListener('submit', async function (event) {
+    event.preventDefault(); // Prevenir el envío normal del formulario
+
+    // Obtener el ID del participante seleccionado
+    const participantId = document.querySelector('#participant_id').value;
+
+    // Obtener dinámicamente los datos de las series y flechas
+    const seriesData = getSeriesData();
+
+    // Capturar el total de X ingresado
+    const totalX = parseInt(document.querySelector('#total_x').value, 10);
+
+    try {
+      // 1. Enviar la información de series y flechas
+      const responseSeries = await fetch(`/series/${participantId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ series: seriesData }),
+      });
+
+      if (!responseSeries.ok) {
+        const error = await responseSeries.json();
+        throw new Error(`Error en series: ${error.error}`);
+      }
+
+      // 2. Enviar la cantidad total de X
+      const responseX = await fetch(`/pointsperfect/${participantId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ total_x: totalX }),
+      });
+
+      if (!responseX.ok) {
+        const error = await responseX.json();
+        throw new Error(`Error en total de X: ${error.error}`);
+      }
+
+      // Usando SweetAlert2 para mostrar el mensaje de éxito
+      Swal.fire({
+        icon: 'success',
+        title: '¡Éxito!',
+        text: 'Series, flechas y total de X guardados con éxito.',
+        confirmButtonText: 'Aceptar'
+      }).then(() => {
+        window.location.reload(); // Recargar la página para limpiar el formulario
+      });
+    } catch (err) {
+      // Si hay un error, muestra un mensaje de error con SweetAlert2
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: err.message,
+        confirmButtonText: 'Aceptar'
+      });
+    }
+  });
+</script>

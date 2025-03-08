@@ -1,0 +1,64 @@
+.navbar {
+  background-color: #294663 ;
+}
+
+.fa-whatsapp {
+  color: #25d366;
+  font-size: 22px;
+}
+
+.fa-whatsapp:hover {
+  transform: scale(1.1);
+}
+
+.full {
+  color: #c83a33 ;
+  font-weight: bold;
+  line-height: .1;
+  margin-top: 10px;
+}
+
+.arquery__subtitle {
+  color: #294663 ;
+}
+
+.table__participant td {
+  background-color: #E8F9FF ;
+}
+
+.btn-mod {
+  margin-left: 3px
+}
+
+.participant__title {
+  color: #294663;
+  font-weight: bold;
+  text-shadow: #097fd4 1px 0 10px;
+}
+
+.programmer {
+  background-color: #E8F9FF;
+}
+
+
+/* *******
+
+
+******** */
+
+@media only screen and (max-width:321px){
+.prueba th{
+  font-size: 12px;
+}
+
+.prueba td {
+  font-size: 14px !important;
+  padding-left: 1px !important;
+  padding-right: 1px !important;
+}
+
+.btn-mod {
+  padding: 3px !important;
+}
+
+}

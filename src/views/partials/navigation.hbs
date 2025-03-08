@@ -1,0 +1,34 @@
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container-fluid">
+    <h3 class="navbar-brand">Contador de puntos Arquería</h3>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav" style="margin-left: auto">
+        
+        {{#if userId}}
+          <li class="nav-item">
+            <a class="nav-link {{#if isActiveAdd}}active{{/if}}" href="/add">Crear Nuevo Participante</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {{#if isActiveSeries}}active{{/if}}" href="/series">Llenar Series y Flechas</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {{#if isActiveList}}active{{/if}}" href="/list">Lista Participantes</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {{#if isActiveUsers}}active{{/if}}" href="/users">Crear Administradores</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/auth/logout">Logout</a>
+          </li>
+        {{else}}
+          <li class="nav-item">
+            <a class="nav-link active" href="/">Inicio</a>
+          </li>
+        {{/if}}
+      </ul>
+    </div>
+  </div>
+</nav>

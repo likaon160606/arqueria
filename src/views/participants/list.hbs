@@ -1,0 +1,125 @@
+<div class="container mt-2">
+    <!-- Formulario para filtrar -->
+    <form action="/list" method="GET" class="mb-4">
+        <div class="row">
+            <div class="col-md-4">
+                <label for="category" class="form-label fw-bold">Categoría</label>
+                <select id="category" name="category" class="form-select">
+                    <option value="" {{#unless selectedCategory}}selected{{/unless}}>Todas</option>
+                    {{#each categories}}
+                        <option value="{{this}}" {{#if (eq this ../selectedCategory)}}selected{{/if}}>{{this}}</option>
+                    {{/each}}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="subcategory" class="form-label fw-bold">Subcategoría</label>
+                <select id="subcategory" name="subcategory" class="form-select">
+                    <option value="" {{#unless selectedSubcategory}}selected{{/unless}}>Todas</option>
+                    {{#each subcategories}}
+                        <option value="{{this}}" {{#if (eq this ../selectedSubcategory)}}selected{{/if}}>{{this}}</option>
+                    {{/each}}
+                </select>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary">Filtrar</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Mantenemos el código original de la tabla -->
+<div class='container-fluid'>
+  <div class='row mt-5'>
+    <h3 class='text-center text-uppercase p-2 participant__title fs-2'>Participantes</h3>
+    {{#if participants}}
+      {{#each participants}}
+        <div class='row text-center p-2 bg-light'>
+          <div class='col-4'>
+            <strong>Categoría:</strong>
+            {{category}}
+          </div>
+          <div class='col-4'>
+            <strong>Subcategoría:</strong>
+            {{subcategory}}
+          </div>
+          <div class="col-4">
+            <strong>+X</strong>
+            {{total_x}}
+          </div>
+        </div>
+
+        <table class='table text-center mt-2'>
+          <thead>
+            <tr class='table-dark'>
+              <th scope='col'>Nombre</th>
+              <th scope='col'>Apellido</th>
+              <th scope='col'>Puntos Totales</th>
+              <th scope='col'>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class='table__participant'>
+              <td>{{name}}</td>
+              <td>{{lastname}}</td>
+              <td><h1 class='text-primary'>{{total_points}}</h1></td>
+              <td>
+                <div class='btn__group'>
+                  <a href='/edit/{{id}}' class='btn btn-warning btn-mod'><i class='fa-solid fa-pencil'></i></a>
+                  <!-- Aquí cambiamos el href a "#" y añadimos el evento onClick -->
+                  <a href="#" class="btn btn-danger btn-mod" onclick="confirmDelete(event, {{id}})">
+                    <i class='fa-solid fa-trash'></i>
+                  </a>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td colspan='4'>
+                {{#each series}}
+                  <div class='mb-2 mt-2 d-flex justify-content-center flex-column align-items-center'>
+                    <strong style='background: #294663; color: white; padding: 6px 14px; border-radius: 50px;'>SERIE {{series_number}}</strong>
+                    <div class='d-flex justify-content-center flex-wrap gap-2 mt-2'>
+                      {{#each arrows}}
+                        <div class='border p-2 rounded-3' style='background: #E8F9FF;'>F{{arrow_number}}: {{points}}</div>
+                      {{/each}}
+                    </div>
+                  </div>
+                {{/each}}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      {{/each}}
+    {{else}}
+      <div class='card text-center mx-auto' style='width:350px'>
+        <div class='card-header'><h3>Debes Crear un Participante</h3></div>
+        <div class='card-body'>
+          <p>Presiona este botón para registrar un nuevo participante</p>
+          <a href='/add' class='btn btn-primary'>Ir a crear</a>
+        </div>
+      </div>
+    {{/if}}
+  </div>
+</div>
+
+<!-- Script para mostrar la confirmación de SweetAlert2 -->
+<script>
+  function confirmDelete(event, participantId) {
+    event.preventDefault(); // Prevenir que el enlace se ejecute inmediatamente
+
+    Swal.fire({
+      title: '¿Estás seguro de eliminar este participante?',
+      text: 'Esta acción no se puede deshacer.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Si el usuario confirma, redirigimos a la ruta de eliminación
+        window.location.href = `/delete/${participantId}`;
+      }
+    });
+  }
+</script>

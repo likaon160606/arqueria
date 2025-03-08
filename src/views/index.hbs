@@ -1,0 +1,54 @@
+<main class='mt-2'>
+  <div class='container'>
+    <div class='row justify-content-center'>
+      <div class='col-12 col-md-8 col-lg-6'>
+        
+        <div class="card mb-2 programmer">
+          <div class="card-header text-center">
+          <p class="fs-6 fw-semibold"><strong>Programador:</strong> Ariel Fuentes García</p>
+          <a href="https://api.whatsapp.com/send?phone=525532604568&text=%C2%A1Hola!.%20Requiero%20información para un proyecto de..." target="_blank" class="text-decoration-none text-dark"><i class="fa-brands fa-whatsapp"></i> <strong>55 3260 4568</strong></a>
+          </div>
+        </div>
+
+        <div class='card'>
+
+          <div class='card-header text-center'>
+            <img
+              class='card-img-top mx-auto'
+              src='/img/logo.png'
+              alt='logo'
+              style='width: 230px; height: auto; display: block;'
+            />
+            <h5 class='full'>Contador de puntos</h5>
+            <h4 class='arquery__subtitle'> - ARQUERÍA -</h4>
+          </div>
+
+          <div class='card-body text-center'>
+            <p>Si no eres Administrador y quieres consultar los <strong>puntos de la competencia</strong> da click 
+              <a class="fw-bold text-primary text-decoration-none fs-4" href="/competition">"Aquí"</a>
+            </p>
+          </div>
+
+          <!-- Formulario de Login -->
+          <div class="card-body text-center">
+            {{!-- <h4>Iniciar sesión</h4> --}}
+            <form action="/auth/login" method="POST">
+              <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" class="form-control" id="email" name="email" required placeholder="Ingrese su email">
+              </div>
+              <div class="form-group">
+                <label for="password">Contraseña</label>
+                <input type="password" class="form-control" id="password" name="password" required placeholder="Ingrese su contraseña">
+              </div>
+              <button type="submit" class="btn btn-primary mt-3">Iniciar sesión</button>
+            </form>
+          </div>
+
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</main>
+

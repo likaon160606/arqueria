@@ -1,0 +1,174 @@
+<div class="container p-4">
+    <div class="row col-md-4 mx-auto">
+        <div class="card text-center">
+            <div class="card-header">
+                <h3 class="text-uppercase">Editando Participante</h3>
+            </div>
+
+            <div class="card-body">
+                <form action="/edit/{{persona.id}}" method="POST">
+                    <div class="input-group mt-2">
+                        <label for="name" class="input-group-text">Nombre</label>
+                        <input class="form-control" type="text" name="name" id="name" value="{{persona.name}}" required>
+                    </div>
+
+                    <div class="input-group mt-2">
+                        <label for="lastname" class="input-group-text">Apellido</label>
+                        <input class="form-control" type="text" name="lastname" id="lastname" value="{{persona.lastname}}" required>
+                    </div>
+
+                    <div class="input-group mt-2">
+                        <label for="category" class="input-group-text">Categoría</label>
+                        <select class="form-control" name="category_id" id="category" required>
+                            {{#each categories}}
+                                <option value="{{this.id}}" {{#if (eq ../persona.category_id this.id)}}selected{{/if}}>{{this.name}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+
+                    <div class="input-group mt-2">
+                        <label for="subcategory" class="input-group-text">Subcategoría</label>
+                        <select class="form-control" name="subcategory_id" id="subcategory" required>
+                            {{#each subcategories}}
+                                <option value="{{this.id}}" {{#if (eq ../persona.subcategory_id this.id)}}selected{{/if}}>{{this.name}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+
+                    <!-- Sección de "Total X" -->
+                    <div class="input-group mt-2">
+                        <label for="total_x" class="input-group-text">Total X</label>
+                        <input class="form-control" type="number" id="total_x" name="total_x" value="{{total_x}}">
+                    </div>
+
+                    <!-- Sección de Series y Flechas -->
+                    <div class="mt-3">
+                        <h5>Series y Flechas</h5>
+                        {{#each series}}
+                            <div class="card mt-2" id="serie-{{this.series_id}}">
+                                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                                    Serie {{this.series_number}}
+                                    <button type="button" class="btn btn-danger btn-sm remove-series" data-series-id="{{this.series_id}}">X</button>
+                                </div>
+                                <ul class="list-group list-group-flush">
+                                    <input type="hidden" name="series[{{@index}}][series_id]" value="{{this.series_id}}">
+                                    <input type="hidden" name="series[{{@index}}][series_number]" value="{{this.series_number}}">
+                                    {{#each this.arrows}}
+                                        <li class="list-group-item d-flex align-items-center">
+                                            Flecha {{this.arrow_number}} -
+                                            <input type="hidden" name="series[{{@../index}}][arrows][{{@index}}][arrow_id]" value="{{this.arrow_id}}">
+                                            <input type="number" class="form-control ms-2" name="series[{{@../index}}][arrows][{{@index}}][points]" value="{{this.points}}" min="0" required>
+                                            
+                                            <!-- Botón para eliminar la flecha -->
+                                            <button type="button" class="btn btn-warning btn-sm ms-2 remove-arrow" data-arrow-id="{{this.arrow_id}}">X</button>
+                                        </li>
+                                    {{/each}}   
+                                </ul>
+                            </div>
+                        {{/each}}
+                    </div>
+
+                    <div class="form-group mt-4 d-grid gap-2">
+                        <button class="btn btn-success">Actualizar Registro</button>
+                        <a class="btn btn-danger" href="/list">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Eliminar flechas individualmente
+    document.querySelectorAll('.remove-arrow').forEach(button => {
+        button.addEventListener('click', function () {
+            const arrowId = this.getAttribute('data-arrow-id');
+            // Usamos SweetAlert2 en vez de confirm
+            Swal.fire({
+                title: '¿Seguro que quieres eliminar esta FLECHA?',
+                text: 'Esta acción no se puede deshacer.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/delete-arrow/${arrowId}`, { method: 'DELETE' })
+                        .then(response => {
+                            if (response.ok) {
+                                this.closest('li').remove();
+                                Swal.fire(
+                                    'Eliminada!',
+                                    'La flecha ha sido eliminada.',
+                                    'success'
+                                );
+                            } else {
+                                Swal.fire(
+                                    'Error',
+                                    'No se pudo eliminar la flecha.',
+                                    'error'
+                                );
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            Swal.fire(
+                                'Error',
+                                'Hubo un problema al eliminar la flecha.',
+                                'error'
+                            );
+                        });
+                }
+            });
+        });
+    });
+
+    // Eliminar serie completa con sus flechas
+    document.querySelectorAll('.remove-series').forEach(button => {
+        button.addEventListener('click', function () {
+            const seriesId = this.getAttribute('data-series-id');
+            // Usamos SweetAlert2 en vez de confirm
+            Swal.fire({
+                title: '¿Seguro que quieres eliminar esta SERIE y todas sus flechas?',
+                text: 'Esta acción no se puede deshacer.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/delete-series/${seriesId}`, { method: 'DELETE' })
+                        .then(response => {
+                            if (response.ok) {
+                                document.getElementById(`serie-${seriesId}`).remove();
+                                Swal.fire(
+                                    'Eliminada!',
+                                    'La serie y sus flechas han sido eliminadas.',
+                                    'success'
+                                );
+                            } else {
+                                Swal.fire(
+                                    'Error',
+                                    'No se pudo eliminar la serie.',
+                                    'error'
+                                );
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            Swal.fire(
+                                'Error',
+                                'Hubo un problema al eliminar la serie.',
+                                'error'
+                            );
+                        });
+                }
+            });
+        });
+    });
+});
+</script>
+

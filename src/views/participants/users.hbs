@@ -1,0 +1,145 @@
+<div class="container mt-5">
+    <div class="row">
+        {{!-- Formulario para crear usuario --}}
+        <div class="col-md-6">
+            <h2>Crear Usuario</h2>
+            <form action="/register" method="POST" class="p-4 border rounded shadow">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Nombre de usuario</label>
+                    <input type="text" id="username" name="username" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Correo electrónico</label>
+                    <input type="email" id="email" name="email" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Contraseña</label>
+                    <input type="password" id="password" name="password" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="role_id" class="form-label">Rol</label>
+                    <select id="role_id" name="role_id" class="form-control" required>
+                        <!-- Se llenará dinámicamente con JS -->
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Crear Usuario</button>
+            </form>
+        </div>
+
+        {{!-- Lista de usuarios --}}
+        <div class="col-md-6">
+            <h2>Listar todos los usuarios</h2>
+            <ul class="list-group shadow" id="user-list">
+                {{#each users}}
+                    <li id="user-{{ this.id }}" class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>{{ this.username }} - {{ this.email }} ({{ this.role }})</span>
+                        {{#if (neq this.role 'master')}}
+                            <button type="button" class="btn btn-danger btn-sm remove-user" data-user-id="{{ this.id }}" data-role="{{ this.role }}">❌ Eliminar</button>
+                        {{/if}}
+                    </li>
+                {{/each}}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const roleSelect = document.getElementById('role_id');
+
+    // Verificar si ya existe un usuario master
+    fetch('/check-master')
+        .then(response => response.json())
+        .then(data => {
+            roleSelect.innerHTML = ''; // Limpiar opciones previas
+
+            if (data.existsMaster) {
+                // Solo permitir rol "Admin"
+                const optionAdmin = document.createElement('option');
+                optionAdmin.value = 2; 
+                optionAdmin.textContent = 'Admin';
+                roleSelect.appendChild(optionAdmin);
+            } else {
+                // Permitir "Master" y "Admin"
+                const optionMaster = document.createElement('option');
+                optionMaster.value = 1;
+                optionMaster.textContent = 'Master';
+                const optionAdmin = document.createElement('option');
+                optionAdmin.value = 2;
+                optionAdmin.textContent = 'Admin';
+
+                roleSelect.appendChild(optionMaster);
+                roleSelect.appendChild(optionAdmin);
+            }
+        })
+        .catch(error => console.error('Error al verificar usuario master:', error));
+
+    // Manejar la eliminación de usuarios con SweetAlert2
+    document.querySelectorAll('.remove-user').forEach(button => {
+        button.addEventListener('click', function () {
+            const userId = this.getAttribute('data-user-id');
+            const userRole = this.getAttribute('data-role');
+
+            if (userRole === 'master') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Acción no permitida',
+                    text: 'No se puede eliminar un usuario con rol "master".',
+                });
+                return;
+            }
+
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: 'No podrás revertir esta acción.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/delete/${userId}`, { method: 'DELETE' })
+                        .then(response => {
+                            if (response.ok) {
+                                document.getElementById(`user-${userId}`).remove();
+                                Swal.fire('Eliminado', 'El usuario ha sido eliminado.', 'success');
+                            } else {
+                                Swal.fire('Error', 'No se pudo eliminar el usuario.', 'error');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            Swal.fire('Error', 'Ocurrió un problema al eliminar el usuario.', 'error');
+                        });
+                }
+            });
+        });
+    });
+
+    // Mostrar notificaciones con SweetAlert2
+    const successMessage = "{{successMessage}}";
+    const errorMessage = "{{errorMessage}}";
+
+    if (successMessage) {
+        Swal.fire({
+            icon: 'success',
+            title: 'Éxito',
+            text: successMessage,
+            timer: 3000,
+            showConfirmButton: false
+        });
+    }
+
+    if (errorMessage) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: errorMessage,
+            timer: 3000,
+            showConfirmButton: false
+        });
+    }
+});
+</script>

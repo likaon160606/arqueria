@@ -1,0 +1,101 @@
+<div class='container p-4'>
+  <div class='row col-md-12 col-lg-6 mx-auto'>
+    <div class='card text-center'>
+      <div class='card-header'>
+        <h3 class='text-uppercase'>crear participante</h3>
+      </div>
+
+      <div class='card-body'>
+        <form action='/add' method='post'>
+          <div class='input-group mt-2'>
+            <label for='name' class='input-group-text'>Nombre</label>
+            <input
+              class='form-control'
+              type='text'
+              name='name'
+              id='name'
+              placeholder='Ejemplo: Ariel'
+              autofocus
+              required
+            />
+          </div>
+          <div class='input-group mt-2'>
+            <label for='lastname' class='input-group-text'>Apellido</label>
+            <input
+              class='form-control'
+              type='text'
+              name='lastname'
+              id='lastname'
+              placeholder='Ejemplo: Fuentes'
+              required
+            />
+          </div>
+          <div class='input-group mt-2'>
+            <label for='category' class='input-group-text'>Categoría</label>
+            <select
+              class='form-control'
+              name='category_id'
+              id='category'
+              required
+            >
+              <option value=''>Seleccione una categoría</option>
+              {{#each categories}}
+                <option value='{{this.id}}'>{{this.name}}</option>
+              {{/each}}
+            </select>
+          </div>
+          <div class='input-group mt-2'>
+            <label
+              for='subcategory'
+              class='input-group-text'
+            >Subcategoría</label>
+            <select
+              class='form-control'
+              name='subcategory_id'
+              id='subcategory'
+              required
+            >
+              <option value=''>Seleccione una subcategoría</option>
+              {{#each subcategories}}
+                <option
+                  value='{{this.id}}'
+                >{{this.name}}</option>
+              {{/each}}
+            </select>
+          </div>
+          <div class='form-group mt-4 d-grid gap-2'>
+            <button class='btn btn-success'>Crear</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Mostrar notificaciones con SweetAlert2
+    const successMessage = "{{successMessage}}";
+    const errorMessage = "{{errorMessage}}";
+
+    if (successMessage) {
+        Swal.fire({
+            icon: 'success',
+            title: 'Éxito',
+            text: successMessage,
+            timer: 1000,
+            showConfirmButton: false
+        });
+    }
+
+    if (errorMessage) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: errorMessage,
+            timer: 3000,
+            showConfirmButton: false
+        });
+    }
+});
+</script>
